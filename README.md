@@ -105,6 +105,31 @@ To integrate MOSS into your existing projects, see [MOSS_INTEGRATION_GUIDE.md](M
 - Batch conversion workflows
 - Connection editing workflows
 
+## Testing
+
+The project includes comprehensive unit tests covering:
+- Basic key-value parsing
+- Quoted strings and escape sequences
+- Nested structures (objects and lists)
+- Mixed nested data (objects containing lists and vice versa)
+- Connection/wiring syntax
+- Header validation
+- Edge cases and error handling
+
+Run tests with:
+```bash
+python -m unittest test_moss
+```
+
+**Test Coverage:** 20 tests, all passing ✓
+
+## Known Improvements in v2.0
+
+- **Escape sequence support** - Properly handles `\"`, `\'`, `\n`, `\t`
+- **Better list-of-objects parsing** - Correctly handles objects as list items
+- **Robust indentation parsing** - More reliable nested structure handling
+- **Comprehensive validation** - Better error messages and edge case handling
+
 ## License
 
 MIT License - See LICENSE file for details

@@ -121,13 +121,13 @@ class MOSSCompiler:
     def _parse_lines(self, lines: List[str]) -> Dict[str, Any]:
         """Parse MOSS body lines into dict structure"""
         root = {}
-        stack = [(root, 0)]  # (current_dict, indent_level)
+        stack = [(root, -1)]  # (current_container, indent_level)
         
         i = 0
         while i < len(lines):
             line = lines[i]
             
-            # Strip inline comment first (v2.0 feature)
+            # Strip inline comment first
             content, comment = self._strip_comment(line)
             
             # Skip empty lines and comment-only lines
@@ -139,64 +139,108 @@ class MOSSCompiler:
             indent = len(content) - len(content.lstrip())
             content = content.strip()
             
-            # Pop stack to correct level
+            # Pop stack to correct indentation level
             while len(stack) > 1 and stack[-1][1] >= indent:
                 stack.pop()
             
-            current_dict, _ = stack[-1]
+            current_container, current_indent = stack[-1]
             
-            # Check for connection operator
-            if '//' in content and not content.startswith('-'):
-                self._parse_connection(content, current_dict)
+            # Handle connection operator
+            if '//' in content and not content.startswith('- '):
+                if isinstance(current_container, dict):
+                    self._parse_connection(content, current_container)
                 i += 1
                 continue
             
-            # Check for list item
+            # Handle list item
             if content.startswith('- '):
                 list_content = content[2:].strip()
                 
-                # Current container should be a list
-                if isinstance(stack[-1][0], list):
-                    stack[-1][0].append(self._parse_value(list_content))
-                else:
-                    # Parent dict's last key should have a list
-                    parent_dict = stack[-1][0]
-                    if isinstance(parent_dict, dict):
-                        # Find the list we're adding to
-                        for key in reversed(list(parent_dict.keys())):
-                            if isinstance(parent_dict[key], list):
-                                parent_dict[key].append(self._parse_value(list_content))
-                                break
+                # We need to add to the list that's at the current container level
+                if isinstance(current_container, list):
+                    # We're already in a list context
+                    # Check if this is a simple value or object
+                    if ':' in list_content:
+                        # Object item - create dict and add to list
+                        obj = {}
+                        key, value = list_content.split(':', 1)
+                        key = key.strip()
+                        value = value.strip()
+                        if value:
+                            obj[key] = self._parse_value(value)
+                        else:
+                            # Empty value - might have nested content
+                            obj[key] = {}
+                        current_container.append(obj)
+                        stack.append((obj, indent))
+                    else:
+                        # Simple value
+                        current_container.append(self._parse_value(list_content))
+                elif isinstance(current_container, dict):
+                    # Adding to a list referenced by last key
+                    if current_container:
+                        last_key = list(current_container.keys())[-1]
+                        if isinstance(current_container[last_key], list):
+                            list_ref = current_container[last_key]
+                            if ':' in list_content:
+                                # Object item
+                                obj = {}
+                                key, value = list_content.split(':', 1)
+                                key = key.strip()
+                                value = value.strip()
+                                if value:
+                                    obj[key] = self._parse_value(value)
+                                else:
+                                    obj[key] = {}
+                                list_ref.append(obj)
+                                stack.append((obj, indent))
+                            else:
+                                list_ref.append(self._parse_value(list_content))
                 
                 i += 1
                 continue
             
-            # Check for key:value pair
+            # Handle key:value pairs
             if ':' in content:
                 key, value = content.split(':', 1)
                 key = key.strip()
                 value = value.strip()
                 
-                if not value or value == '[]':
-                    # Empty value could be nested object or empty list
-                    # Peek ahead to see if next lines are list items
-                    if i + 1 < len(lines):
-                        next_line = lines[i + 1].strip() if i + 1 < len(lines) else ''
-                        if next_line.startswith('- '):
-                            # Next line is list item, so this is a list
-                            current_dict[key] = []
-                            stack.append((current_dict[key], indent))
-                        else:
-                            # Nested object
-                            new_dict = {}
-                            current_dict[key] = new_dict
-                            stack.append((new_dict, indent))
+                if not value:
+                    # Check if next line indicates list or object
+                    is_list = False
+                    j = i + 1
+                    while j < len(lines):
+                        next_line = lines[j]
+                        next_content, _ = self._strip_comment(next_line)
+                        next_stripped = next_content.strip()
+                        
+                        if next_stripped:
+                            next_indent = len(next_content) - len(next_content.lstrip())
+                            if next_indent <= indent:
+                                break
+                            if next_stripped.startswith('- '):
+                                is_list = True
+                            break
+                        j += 1
+                    
+                    if is_list:
+                        new_list = []
+                        if isinstance(current_container, dict):
+                            current_container[key] = new_list
+                            stack.append((new_list, indent))
                     else:
-                        # No more lines, treat as empty dict
-                        current_dict[key] = {} if not value else []
+                        new_dict = {}
+                        if isinstance(current_container, dict):
+                            current_container[key] = new_dict
+                            stack.append((new_dict, indent))
                 else:
-                    # Simple key:value
-                    current_dict[key] = self._parse_value(value)
+                    # Has value
+                    if isinstance(current_container, dict):
+                        current_container[key] = self._parse_value(value)
+                    elif isinstance(current_container, list):
+                        # Shouldn't happen in well-formed MOSS
+                        pass
             
             i += 1
         
@@ -268,11 +312,21 @@ class MOSSCompiler:
         except ValueError:
             pass
         
-        # String (remove quotes if present)
+        # String (remove quotes if present and handle escape sequences)
         if value.startswith('"') and value.endswith('"'):
-            return value[1:-1]
+            result = value[1:-1]
+            # Handle escape sequences
+            result = result.replace('\\"', '"').replace("\\'", "'")
+            result = result.replace('\\n', '\n').replace('\\t', '\t')
+            result = result.replace('\\\\', '\\')
+            return result
         if value.startswith("'") and value.endswith("'"):
-            return value[1:-1]
+            result = value[1:-1]
+            # Handle escape sequences
+            result = result.replace('\\"', '"').replace("\\'", "'")
+            result = result.replace('\\n', '\n').replace('\\t', '\t')
+            result = result.replace('\\\\', '\\')
+            return result
         
         return value
 
