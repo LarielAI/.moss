@@ -1,0 +1,103 @@
+@MOSS:iTHEIA_Appendices_Index
+@R:C:\QUARTERHILL\RAG Pipeline\installation manual\
+
+# Appendices index for installation manual
+# ACT=INT mapping for searchable appendix references
+
+installation:
+  Item1:
+    id: A
+    title: Site Termination - Permanent Installation (GFCI Duplex)
+    appendix: Appendix A
+    page_int: 32
+    page_act: a-1
+    page: a-1
+    manual: installation
+    section: A
+    drawing_number: 3902-00213-00105
+    description: GFCI Duplex wiring schematic
+    keywords: site termination gfci wiring electrical schematic
+    image: installation_page_32.png
+    images:
+      - installation_page_32.png
+      - Appendix A Site Termination-Permanent Installation.png
+  Item2:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 1)
+    appendix: Appendix B
+    page_int: 33
+    page_act: b-1
+    page: b-1
+    manual: installation
+    section: B
+    subsection: b-1
+    drawing_number: 3902-00213-00106
+    description: Pole mount bracket detail page 1
+    keywords: pole mount bracket installation mechanical
+    image: installation_page_33.png
+    images:
+      - Figure_33_1.png
+      - Figure_33_2.jpeg
+  Item3:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 2)
+    appendix: Appendix B
+    page_int: 34
+    page_act: b-2
+    page: b-2
+    manual: installation
+    section: B
+    subsection: b-2
+    drawing_number: 3902-00213-00106
+    description: Pole mount bracket detail page 2
+    keywords: pole mount bracket installation mechanical
+    image: installation_page_34.png
+    images:
+      - Figure_34_1.png
+  Item4:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 3)
+    appendix: Appendix B
+    page_int: 35
+    page_act: b-3
+    page: b-3
+    manual: installation
+    section: B
+    subsection: b-3
+    drawing_number: 3902-00213-00106
+    description: Pole mount bracket detail page 3
+    keywords: pole mount bracket installation mechanical
+    image: installation_page_35.png
+    images:
+      - Figure_35_1.png
+  Item5:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 4)
+    appendix: Appendix B
+    page_int: 36
+    page_act: b-4
+    page: b-4
+    manual: installation
+    section: B
+    subsection: b-4
+    drawing_number: 3902-00213-00106
+    description: Pole mount bracket detail page 4
+    keywords: pole mount bracket installation mechanical
+    image: installation_page_36.png
+    images: []
+  Item6:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 5)
+    appendix: Appendix B
+    page_int: 37
+    page_act: b-5
+    page: b-5
+    manual: installation
+    section: B
+    subsection: b-5
+    drawing_number: 3902-00213-00106
+    description: Pole mount bracket detail page 5
+    keywords: pole mount bracket installation mechanical
+    image: installation_page_37.png
+    images: []
+operator: []

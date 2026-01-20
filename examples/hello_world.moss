@@ -1,0 +1,29 @@
+@MOSS:hello_world_example
+@R:./resources/
+
+# Simple MOSS example demonstrating basic structure and syntax
+
+application:
+  name: MOSS Example
+  version: 1.0
+  description: A simple introduction to MOSS format
+  
+system:
+  status: active // monitoring:alerts:system_health
+  components:
+    - name: Database
+      type: PostgreSQL
+      health: healthy
+    - name: API Server
+      type: Python FastAPI
+      health: healthy
+  
+monitoring:
+  alerts:
+    system_health: "All systems operational"
+    last_check: "2026-01-20T10:30:00Z"
+    
+metadata:
+  author: MOSS Team
+  created: "2026-01-20"
+  format_version: 2.0

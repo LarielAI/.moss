@@ -1,0 +1,37 @@
+@MOSS:iTHEIA_Appendices_Index
+@R:C:\QUARTERHILL\RAG Pipeline\installation manual\
+
+# Appendices index for installation manual
+# ACT=INT mapping for searchable appendix references
+
+installation:
+  Item1:
+    id: A
+    title: Site Termination - Permanent Installation (GFCI Duplex)
+    appendix: Appendix A
+    page_int: 32
+    page_act: a-1
+    page: a-1
+    manual: installation
+    section: A
+    drawing_number: 3902-00213-00105
+    description: GFCI Duplex wiring schematic
+    keywords: site termination gfci wiring electrical schematic
+    image: installation_page_32.png
+    images:
+      - installation_page_32.png
+      - Appendix A Site Termination-Permanent Installation.png
+  
+  Item2:
+    id: B
+    title: Pole Mount Detail - Permanent Installation (Page 1)
+    appendix: Appendix B
+    page_int: 33
+    page_act: b-1
+    page: b-1
+    manual: installation
+    section: B
+    drawing_number: 3902-00213-00106
+    description: Pole mount structural details
+    keywords: pole mount permanent installation structure
+    image: installation_page_33.png
